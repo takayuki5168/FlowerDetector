@@ -42,7 +42,11 @@ def download_pictures(keyword='', per_page=10):
         print(e)
 
 if __name__ == '__main__':
-    keywords = ['tulip', 'daisy', 'marigold', 'morning glory', 'dandelion', 'pansy', 'trifolium repens', 'sunflower', 'lantana', 'trifolium pratense']
+    keywords = []
+    with open(current_dir + '/../config/flower_species.txt') as f:
+        for l in f.readlines():
+            w = l.split(', ')
+            keywords.append(w[0])
 
     for keyword in keywords:
         print("Download '{}'".format(keyword))

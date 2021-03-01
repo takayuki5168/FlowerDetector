@@ -1,0 +1,48 @@
+tulip, チューリップ
+daisy, デイジー
+marigold, マリーゴールド
+morning glory, アサガオ
+dandelion, タンポポ
+pansy, パンジー
+trifolium repens, シロツメクサ
+sunflower, ヒマワリ
+lantana, ランタナ
+trifolium pratense, ムラサキツメクサ
+houttuynia cordata, ドクダミ
+iris, アヤメ
+oxalis, カタバミ
+salvia, サルビア
+mirabilis jalapa, オシロイバナ
+erigeron annuus, ヒメジョオン
+philadelphia fleabane, ハルジオン
+azalea, ツツジ
+rape blossoms, ナノハナ
+cherry blossoms, サクラ
+plum, ウメ
+papaver dubium, ナガミヒナゲシ
+cosmos, コスモス
+cirsium, アザミ
+poinsettia, ポインセチア
+carnation, カーネーション
+moss phlox, シバザクラ
+rose, バラ
+dahlia, ダリア
+gerbera, ガーベラ
+begonia, ベゴニア
+convallaria majalis, スズラン
+petunia, ペチュニア
+dianthus, ナデシコ
+nemophila, ネモフィラ
+gypsophila elegans, カスミソウ
+chrysanthemum, キク
+lupine, ルピナス
+lily, ユリ
+camellia, ツバキ
+lycoris radiata, ヒガンバナ
+catharanthus roseus, ニチニチソウ
+violet, スミレ
+papaver rhoeas, ポピー
+commelina communis, ツユクサ
+persicaria capitata, ヒメツルソバ
+Oenothera rosea, ユウゲショウ
+oxalis debilis, ムラサキカタバミ
