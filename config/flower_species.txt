@@ -44,5 +44,5 @@ violet, スミレ
 papaver rhoeas, ポピー
 commelina communis, ツユクサ
 persicaria capitata, ヒメツルソバ
-Oenothera rosea, ユウゲショウ
+oenothera rosea, ユウゲショウ
 oxalis debilis, ムラサキカタバミ

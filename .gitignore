@@ -1,1 +1,7 @@
 config/flickr.json
+venv/
+
+weights/
+logs/
+
+*.py[cdo]

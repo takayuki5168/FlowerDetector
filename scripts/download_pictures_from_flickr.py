@@ -6,6 +6,8 @@ import json
 from urllib.request import urlretrieve
 import ssl
 
+sys.path.append('/home/t-murooka/.local/lib/python2.7/site-packages')
+
 current_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 json_load = json.load(open(current_dir + '/../config/flickr.json', 'r'))
@@ -14,7 +16,7 @@ secret_key = json_load['secret_key']
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-def download_pictures(keyword='', per_page=10):
+def download_pictures(keyword='', per_page=100):
     data_dir = current_dir + '/../dataset/' + keyword
 
     flickr = flickrapi.FlickrAPI(flickr_api_key, secret_key, format='parsed-json')
