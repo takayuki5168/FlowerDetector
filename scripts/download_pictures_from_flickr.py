@@ -16,7 +16,7 @@ secret_key = json_load['secret_key']
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-def download_pictures(keyword='', per_page=100):
+def download_pictures(keyword='', per_page=300):
     data_dir = current_dir + '/../dataset/' + keyword
 
     flickr = flickrapi.FlickrAPI(flickr_api_key, secret_key, format='parsed-json')
