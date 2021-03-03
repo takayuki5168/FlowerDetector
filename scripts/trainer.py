@@ -15,6 +15,7 @@ from torch.utils.tensorboard import SummaryWriter
 from models.vgg_finetune_net import *
 from models.mobilenet_finetune_net import *
 from models.resnet_finetune_net import *
+from models.inception_finetune_net import *
 
 script_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
 #dataset_dir = script_dir + '/../test_dataset/'
@@ -22,18 +23,20 @@ script_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
 dataset_dir = script_dir + '/../dataset/'
 
 class Trainer(object):
-    def __init__(self, gpu, optimizer_type, lr, weight_decay):
+    def __init__(self, gpu, model_architecture, optimizer_type, lr, weight_decay):
         self.cuda = gpu if gpu >= 0 else -1
 
-        self.model_architecture = 'resnet50'
-        #self.model_architecture = 'vgg19'
+        self.model_architecture = model_architecture
         self.optimizer_type = optimizer_type
         self.lr = lr
         self.weight_decay = weight_decay
         print('[{} {}]'.format(self.model_architecture, self.optimizer_type))
 
         self.train_ratio = 0.8
-        self.batch_size = 64
+        if self.model_architecture != 'inceptionv3':
+            self.batch_size = 4
+        else:
+            self.batch_size = 16 # 64
         self.max_epoch = 46
         self.out_num = len([f for f in os.listdir(dataset_dir) if os.path.isdir(dataset_dir + f)])
 
@@ -44,10 +47,11 @@ class Trainer(object):
         transform = transforms.Compose(
             [transforms.Resize((self.in_num, self.in_num)),
              transforms.RandomHorizontalFlip(),
-             #transforms.RandomResizedCrop(size=self.in_num, scale=(0.08, 1.0), ratio=(3 / 4, 4 / 3), interpolation=2),
+             #transforms.RandomResizedCrop(size=self.in_num, scale=(0.08, 1.0), ratio=(3.0 / 4, 4.0 / 3), interpolation=2),
              #transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3),
              transforms.ToTensor(),
-             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+             #transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+            ])
         data = torchvision.datasets.ImageFolder(root=dataset_dir, transform=transform)
 
         train_size = int(self.train_ratio * len(data))
@@ -66,8 +70,16 @@ class Trainer(object):
             self.model, self.in_num = get_mobilenet_finetune_net(self.out_num)
         elif self.model_architecture == 'resnet18':
             self.model, self.in_num = get_resnet18_finetune_net(self.out_num)
+        elif self.model_architecture == 'resnet34':
+            self.model, self.in_num = get_resnet34_finetune_net(self.out_num)
         elif self.model_architecture == 'resnet50':
             self.model, self.in_num = get_resnet50_finetune_net(self.out_num)
+        elif self.model_architecture == 'resnet101':
+            self.model, self.in_num = get_resnet101_finetune_net(self.out_num)
+        elif self.model_architecture == 'resnet152':
+            self.model, self.in_num = get_resnet152_finetune_net(self.out_num)
+        elif self.model_architecture == 'inceptionv3':
+            self.model, self.in_num = get_inceptionv3_finetune_net(self.out_num)
 
         if self.cuda >= 0:
             self.model = self.model.to('cuda:{}'.format(self.cuda))
@@ -82,14 +94,23 @@ class Trainer(object):
             data, label = Variable(data), Variable(label)
 
             self.optimizer.zero_grad()
-            output = self.model(data)
 
-            # loss
+            # criterion
             if self.cuda >= 0:
                 criterion = nn.CrossEntropyLoss().to('cuda:{}'.format(self.cuda))
             else:
                 criterion = nn.CrossEntropyLoss()
-            loss = criterion(output, label)
+
+            # loss
+            if self.model_architecture != 'inceptionv3':
+                output = self.model(data)
+                loss = criterion(output, label)
+            else:
+                output, aux_output = self.model(data)
+                loss1 = criterion(output, label)
+                loss2 = criterion(aux_output, label)
+                loss = loss1 + 0.4 * loss2
+
             loss_data = loss.data.item()
             train_loss += loss_data / len(data)
 
@@ -112,14 +133,16 @@ class Trainer(object):
                 data, label = data.to('cuda:{}'.format(self.cuda)), label.to('cuda:{}'.format(self.cuda))
             data, label = Variable(data), Variable(label)
 
-            output = self.model(data)
-
-            # loss
+            # criterion
             if self.cuda >= 0:
                 criterion = nn.CrossEntropyLoss().to('cuda:{}'.format(self.cuda))
             else:
                 criterion = nn.CrossEntropyLoss()
+
+            # loss
+            output = self.model(data)
             loss = criterion(output, label)
+
             loss_data = loss.data.item()
             validate_loss += loss_data / len(data)
 
@@ -173,9 +196,10 @@ class Trainer(object):
 if __name__ == '__main__':
     gpu = int(sys.argv[sys.argv.index('-g') + 1]) if '-g' in sys.argv else -1
 
+    model_architecture = sys.argv[sys.argv.index('-m') + 1] if '-m' in sys.argv else 'resnet50'
     optimizer_type = sys.argv[sys.argv.index('-o') + 1] if '-o' in sys.argv else 'Adam'
     lr = float(sys.argv[sys.argv.index('-l') + 1]) if '-l' in sys.argv else 1e-5
     weight_decay = float(sys.argv[sys.argv.index('-w') + 1]) if '-w' in sys.argv else 0
 
-    trainer = Trainer(gpu, optimizer_type, lr, weight_decay)
+    trainer = Trainer(gpu, model_architecture, optimizer_type, lr, weight_decay)
     trainer.train()
