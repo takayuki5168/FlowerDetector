@@ -9,13 +9,6 @@ def get_mobilenet_finetune_net(out_num):
     for p in model.features.parameters():
         p.requires_grad = False
 
-    model.classifier = nn.Sequential(
-        nn.Linear(1280, 1000),
-        nn.ReLU(True),
-        nn.Dropout(),
-        nn.Linear(1000, 1000),
-        nn.ReLU(True),
-        nn.Dropout(),
-        nn.Linear(1000, out_num)
-    )
+    model.classifier[1] = nn.Linear(model.classifier[1].in_features, out_num)
+
     return model, in_num
